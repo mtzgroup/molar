@@ -1,0 +1,81 @@
+a {
+  text-decoration: none;
+}
+
+.navbar {
+  background-color: #e9ecef;
+}
+.navbar-brand a {
+  color: inherit;
+}
+
+#nav a {
+  color: rgba(0,0,0,0.65);
+  transition: none;
+}
+#nav a.active, #nav a.active:hover {
+  color: #fff;
+}
+#nav a:hover {
+  color: #212529;
+}
+#nav.nav-pills .nav-link.active {
+  background-color: #6f42c1;
+}
+
+#searchResults-summary {
+  display: inline-block;
+}
+
+.moleculeTable > div {
+  text-align: center;
+}
+.molecule {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.molecule-img {
+  background-color: #fcfcfc;
+  border-radius: 10px;
+}
+.molecule .spinner-border {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -1rem;
+  margin-top: -1rem;
+}
+
+.molecule-name {
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.nav-separator {
+  height: 4px;
+}
+
+.pageControl .btn-outline-secondary {
+  color: #212529;
+}
+.pageControl .btn-outline-secondary:hover {
+  color: #fff;
+}
+
+#periodicTable td {
+  text-align: center;
+}
+
+#qrcode {
+  float: right;
+}
+
+footer {
+  background-color: #e9ecef;
+}
+footer a {
+  color: #343a40;
+}

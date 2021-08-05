@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MolAR: Molecular Augmented Reality</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta property="description" content="Molecular augmented reality" />
+  <meta property="og:title" content="MolAR" />
+  <meta property="og:type" content="website" />
+  <meta property="og:description" content="Molecular augmented reality" />
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container pt-1">
+      <span class="navbar-brand">
+        <h1><img src="../img/ar.svg" width="24" height="28" class="me-1" alt="MolAR logo" /> <a href="..">Mol<span style="color: #6610f2">AR</span></a></h1>
+      </span>
+      <div class="navbar-expand">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="..">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href=".">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container pt-3 pb-5">
+    <p class="lead"><b>MolAR</b> lets users visualize proteins and molecules through augmented reality. Users can visualize any protein in the Protein Data Bank by entering the PDB ID in the search field.</p>
+
+    <h2 class="mt-4">How do I use augmented reality (AR)?</h2>
+
+    <p>On a smartphone such as iPhone or Android, tap a molecule and <b>point the camera to a flat surface with sufficient light</b>. The molecule should then appear on the surface.</p>
+
+    <h2 class="mt-4">Why does AR not work on my device?</h2>
+
+    <p>We currently only support augmented reality on the following devices:</p>
+    <ul>
+      <li>iPhone or iPad running iOS 12 or later</li>
+      <li>Android phones that support ARCore. See the <a href="https://developers.google.com/ar/discover/supported-devices">list of ARCore supported devices</a>.</li>
+    </ul>
+
+    <h2 class="mt-4">What do the colors mean?</h2>
+
+    <p>We use the CPK coloring for atoms, as shown below.</p>
+
+    <table cellpadding="3" id="periodicTable" class="mb-4">
+      <tbody>
+        <tr><td class="border-top border-start border-end">H</td><td colspan="16"></td><td>He</td></tr>
+        <tr><td>Li</td><td>Be</td><td colspan="10"></td><td>B</td><td>C</td><td>N</td><td>O</td><td>F</td><td>Ne</td></tr>
+        <tr><td>Na</td><td>Mg</td><td colspan="10"></td><td>Al</td><td>Si</td><td>P</td><td>S</td><td>Cl</td><td>Ar</td></tr>
+        <tr><td>K</td><td>Ca</td><td>Sc</td><td>Ti</td><td>V</td><td>Cr</td><td>Mn</td><td>Fe</td><td>Co</td><td>Ni</td><td>Cu</td><td>Zn</td><td>Ga</td><td>Ge</td><td>As</td><td>Se</td><td>Br</td><td>Kr</td></tr>
+        <tr><td>Rb</td><td>Sr</td><td>Y</td><td>Zr</td><td>Nb</td><td>Mo</td><td>Tc</td><td>Ru</td><td>Rh</td><td>Pd</td><td>Ag</td><td>Cd</td><td>In</td><td>Sn</td><td>Sb</td><td>Te</td><td>I</td><td>Xe</td></tr>
+        <tr><td>Cs</td><td>Ba</td><td></td><td>Hf</td><td>Ta</td><td>W</td><td>Re</td><td>Os</td><td>Ir</td><td>Pt</td><td>Au</td><td>Hg</td><td>Tl</td><td>Pb</td><td>Bi</td><td>Po</td><td>At</td><td>Rn</td></tr>
+        <tr><td>Fr</td><td>Ra</td><td></td><td>Rf</td><td>Db</td><td>Sg</td><td>Bh</td><td>Hs</td><td>Mt</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan="18">&nbsp;</td></tr>
+        <tr><td></td><td></td><td>La</td><td>Ce</td><td>Pr</td><td>Nd</td><td>Pm</td><td>Sm</td><td>Eu</td><td>Gd</td><td>Tb</td><td>Dy</td><td>Ho</td><td>Er</td><td>Tm</td><td>Yb</td><td>Lu</td><td></td></tr>
+        <tr><td></td><td></td><td>Ac</td><td>Th</td><td>Pa</td><td>U</td> <td>Np</td><td>Pu</td><td>Am</td><td>Cm</td><td>Bk</td><td>Cf</td><td>Es</td><td>Fm</td><td>Md</td><td>No</td><td>Lr</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="mt-4">Who are we?</h2>
+
+    <p>This website is created by <a href="https://twitter.com/sukolsak">Sukolsak Sakshuwong</a> and <a href="https://orcid.org/0000-0002-8219-224X">Umberto Raucci</a> from the <a href="https://mtzweb.stanford.edu">Martinez Group</a> at Stanford University. We want to make visualization of proteins and molecules easier and more accessible to everyone. If you have any feedback or suggestions, please <a href="mailto:sukolsak@stanford.edu">let us know</a>.</p>
+    <p>The structure data are from the Protein Data Bank, NCI/CADD, and PubChem. The source code of the <a href="https://github.com/sukolsak/molrender3d">rendering tool</a> is available on GitHub.</p>
+  </div>
+
+  <script>
+  const elements = [
+    ["H", "FFFFFF"],
+    ["He", "D9FFFF"],
+    ["Li", "CC80FF"],
+    ["Be", "C2FF00"],
+    ["B", "FFB5B5"],
+    ["C", "909090"],
+    ["N", "3050F8"],
+    ["O", "FF0D0D"],
+    ["F", "90E050"],
+    ["Ne", "B3E3F5"],
+    ["Na", "AB5CF2"],
+    ["Mg", "8AFF00"],
+    ["Al", "BFA6A6"],
+    ["Si", "F0C8A0"],
+    ["P", "FF8000"],
+    ["S", "FFFF30"],
+    ["Cl", "1FF01F"],
+    ["Ar", "80D1E3"],
+    ["K", "8F40D4"],
+    ["Ca", "3DFF00"],
+    ["Sc", "E6E6E6"],
+    ["Ti", "BFC2C7"],
+    ["V", "A6A6AB"],
+    ["Cr", "8A99C7"],
+    ["Mn", "9C7AC7"],
+    ["Fe", "E06633"],
+    ["Co", "F090A0"],
+    ["Ni", "50D050"],
+    ["Cu", "C88033"],
+    ["Zn", "7D80B0"],
+    ["Ga", "C28F8F"],
+    ["Ge", "668F8F"],
+    ["As", "BD80E3"],
+    ["Se", "FFA100"],
+    ["Br", "A62929"],
+    ["Kr", "5CB8D1"],
+    ["Rb", "702EB0"],
+    ["Sr", "00FF00"],
+    ["Y", "94FFFF"],
+    ["Zr", "94E0E0"],
+    ["Nb", "73C2C9"],
+    ["Mo", "54B5B5"],
+    ["Tc", "3B9E9E"],
+    ["Ru", "248F8F"],
+    ["Rh", "0A7D8C"],
+    ["Pd", "006985"],
+    ["Ag", "C0C0C0"],
+    ["Cd", "FFD98F"],
+    ["In", "A67573"],
+    ["Sn", "668080"],
+    ["Sb", "9E63B5"],
+    ["Te", "D47A00"],
+    ["I", "940094"],
+    ["Xe", "429EB0"],
+    ["Cs", "57178F"],
+    ["Ba", "00C900"],
+    ["La", "70D4FF"],
+    ["Ce", "FFFFC7"],
+    ["Pr", "D9FFC7"],
+    ["Nd", "C7FFC7"],
+    ["Pm", "A3FFC7"],
+    ["Sm", "8FFFC7"],
+    ["Eu", "61FFC7"],
+    ["Gd", "45FFC7"],
+    ["Tb", "30FFC7"],
+    ["Dy", "1FFFC7"],
+    ["Ho", "00FF9C"],
+    ["Er", "00E675"],
+    ["Tm", "00D452"],
+    ["Yb", "00BF38"],
+    ["Lu", "00AB24"],
+    ["Hf", "4DC2FF"],
+    ["Ta", "4DA6FF"],
+    ["W", "2194D6"],
+    ["Re", "267DAB"],
+    ["Os", "266696"],
+    ["Ir", "175487"],
+    ["Pt", "D0D0E0"],
+    ["Au", "FFD123"],
+    ["Hg", "B8B8D0"],
+    ["Tl", "A6544D"],
+    ["Pb", "575961"],
+    ["Bi", "9E4FB5"],
+    ["Po", "AB5C00"],
+    ["At", "754F45"],
+    ["Rn", "428296"],
+    ["Fr", "420066"],
+    ["Ra", "007D00"],
+    ["Ac", "70ABFA"],
+    ["Th", "00BAFF"],
+    ["Pa", "00A1FF"],
+    ["U", "008FFF"],
+    ["Np", "0080FF"],
+    ["Pu", "006BFF"],
+    ["Am", "545CF2"],
+    ["Cm", "785CE3"],
+    ["Bk", "8A4FE3"],
+    ["Cf", "A136D4"],
+    ["Es", "B31FD4"],
+    ["Fm", "B31FBA"],
+    ["Md", "B30DA6"],
+    ["No", "BD0D87"],
+    ["Lr", "C70066"],
+    ["Rf", "CC0059"],
+    ["Db", "D1004F"],
+    ["Sg", "D90045"],
+    ["Bh", "E00038"],
+    ["Hs", "E6002E"],
+    ["Mt", "EB0026"]
+  ];
+  const periodicTable = document.getElementById("periodicTable");
+  for (const row of periodicTable.rows) {
+    for (const cell of row.cells) {
+      for (const element of elements) {
+        if (cell.textContent == element[0]) {
+          cell.style.backgroundColor = "#" + element[1];
+          break;
+        }
+      }
+    }
+  }
+  </script>
+</body>
+</html>
