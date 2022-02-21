@@ -1,6 +1,8 @@
 This repository contains the source code of MolAR, an app for chemistry in augmented reaility.
 
-When using MolAR in research, please cite Sukolsak Sakshuwong, Hayley Weir, Umberto Raucci, Todd J. Martínez. [MolAR: Bringing Chemical Structures to Life with Augmented Reality and Machine Learning](https://chemrxiv.org/engage/chemrxiv/article-details/613081028e38a3bd644709da). ChemRxiv.
+When using MolAR in research, please cite
+
+> Sukolsak Sakshuwong, Hayley Weir, Umberto Raucci, and Todd J. Martínez , "[Bringing chemical structures to life with augmented reality, machine learning, and quantum chemistry](https://aip.scitation.org/doi/10.1063/5.0090482)", J. Chem. Phys. 156, 204801 (2022)
 
 MolAR has 2 components:
 - iOS app

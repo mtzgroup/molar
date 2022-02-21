@@ -229,7 +229,7 @@ class GalleryViewController: UICollectionViewController, UISearchControllerDeleg
         let query = originalQuery.trimmingCharacters(in: CharacterSet.whitespaces)
 
         if isNamePotentiallyPDB(query) {
-            let url = URL(string: "https://www.rcsb.org/search/suggester/rcsb_entry_container_identifiers.entry_id/" + query.lowercased())!
+            let url = URL(string: "https://www.rcsb.org/search/suggest/false/" + query.lowercased())!
             let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
                 DispatchQueue.main.async {
                     if originalQuery != self.searchQuery {
@@ -243,10 +243,17 @@ class GalleryViewController: UICollectionViewController, UISearchControllerDeleg
                         return
                     }
                     let jsonData = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    if let topJSON = jsonData as? [Any] {
-                        let suggestionItems: [Item] = topJSON.compactMap { x in
-                            if let x = x as? String {
-                                let name = x.replacingOccurrences(of: "<em>", with: "").replacingOccurrences(of: "</em>", with: "")
+                    if let topJSON = jsonData as? [String: Any],
+                       let attributes = topJSON["attributes"] as? [Any],
+                       let attrIndex = attributes.firstIndex(where: { ($0 as? [String: Any])?["attribute"] as? String == "rcsb_entry_container_identifiers.entry_id" }),
+                       let jsonItems = topJSON["items"] as? [Any] {
+                        let suggestionItems: [Item] = jsonItems.compactMap { x in
+                            if let x = x as? [String: Any],
+                               let attrIndex2 = x["attrIndex"] as? Int,
+                               attrIndex == attrIndex2,
+                               let html = x["__html"] as? String,
+                               !html.isEmpty {
+                                let name = html.replacingOccurrences(of: "<em>", with: "").replacingOccurrences(of: "</em>", with: "")
                                 let item = Item(name: name.lowercased(), text: name, isPDB: true)
                                 item.isSuggestion = true
                                 return item
@@ -266,7 +273,7 @@ class GalleryViewController: UICollectionViewController, UISearchControllerDeleg
             task.resume()
 
         } else {
-            let tmp = Database.search(query, isSuggestion: false)
+            let tmp = Database.search(query)
             self.searchResultController.setItems(tmp)
             let collectionView = self.searchResultController.collectionView!
             collectionView.contentOffset = CGPoint(x: 0, y: -collectionView.adjustedContentInset.top)
@@ -316,7 +323,7 @@ class GalleryViewController: UICollectionViewController, UISearchControllerDeleg
             }
             task.resume()
         } else {
-            let tmp = Database.search(query, isSuggestion: false)
+            let tmp = Database.search(query)
             self.searchResultController.setItems(tmp)
         }
     }

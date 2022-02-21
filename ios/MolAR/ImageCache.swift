@@ -10,9 +10,9 @@
 import UIKit
 import Foundation
 
-public class ImageCache {
+class ImageCache {
 
-    public static let publicCache = ImageCache()
+    static let publicCache = ImageCache()
     var placeholderImage = UIImage(named: "Blank")! //UIImage(systemName: "rectangle")!
     private let cachedImages = NSCache<NSURL, UIImage>()
     private var loadingResponses = [NSURL: [(UIImage?) -> Swift.Void]]()

@@ -76,9 +76,9 @@ class AboutViewController: UIViewController, WKNavigationDelegate {
 
     <h2>About Us</h2>
 
-    <p>This app is created by Sukolsak Sakshuwong, Umberto Raucci, Hayley Weir, and Todd J. Martínez from the Martinez Group at Stanford University. If you have any feedback or suggestions, please contact us at sukolsak@gmail.com.</p>
+    <p>This app is created by the Martinez Group at Stanford University. If you have any feedback or suggestions, please contact us at sukolsak@gmail.com.</p>
     <p>The data in this app are from the Protein Data Bank, NCI/CADD, PubChem, and ChEBI. Proteins and macromolecules are rendered using Mol*.</p>
-    <p>When using MolAR in research, please cite Sukolsak Sakshuwong, Hayley Weir, Umberto Raucci, Todd J. Martínez. <a href="https://chemrxiv.org/engage/chemrxiv/article-details/613081028e38a3bd644709da">MolAR: Bringing Chemical Structures to Life with Augmented Reality and Machine Learning</a>. ChemRxiv.</p>
+    <p>When using MolAR in research, please cite Sukolsak Sakshuwong, Hayley Weir, Umberto Raucci, and Todd J. Martínez, "<a href="https://aip.scitation.org/doi/10.1063/5.0090482">Bringing chemical structures to life with augmented reality, machine learning, and quantum chemistry</a>", Journal of Chemical Physics. 156, 204801 (2022).</p>
 
   <script>
   const elements = [

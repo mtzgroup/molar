@@ -338,7 +338,14 @@ class RecognizeViewController: UIViewController, ARSCNViewDelegate, UIGestureRec
         showsControls = false
         updateViews()
 
-        selectedItem!.getUSDZURL(molecularModelMode: molecularModelMode, molecularOrbitalMode: molecularOrbitalMode, showDipoleMoment: showDipoleMoment, vibrationalMode: nil, defaultScale: (mode == .structure) ? 2.0 : 8.0) { url in
+        selectedItem!.getUSDZURL(
+            molecularModelMode: molecularModelMode,
+            molecularOrbitalMode: molecularOrbitalMode,
+            showDipoleMoment: showDipoleMoment,
+            vibrationalMode: nil,
+            polymerMode: .cartoon,
+            defaultScale: (mode == .structure) ? 2.0 : 8.0
+        ) { url in
             guard let url = url else {
                 self.moleculeNode!.hideLoading()
                 self.isLoading = false
@@ -859,6 +866,7 @@ class RecognizeViewController: UIViewController, ARSCNViewDelegate, UIGestureRec
     @objc private func showMenu(sender: Any?) {
         let vc = MoleculeMenuViewController()
         vc.modalPresentationStyle = .popover
+        vc.isPDB = false
         vc.molecularModelMode = molecularModelMode
         vc.molecularOrbitalMode = molecularOrbitalMode
         vc.showDipoleMoment = showDipoleMoment
@@ -872,7 +880,7 @@ class RecognizeViewController: UIViewController, ARSCNViewDelegate, UIGestureRec
         present(vc, animated: false, completion: nil)
     }
 
-    func moleculeMenuViewController(_: MoleculeMenuViewController, didSelectMolecule mode: MolecularModelMode) {
+    func moleculeMenuViewController(_: MoleculeMenuViewController, didSelectMolecularModelMode mode: MolecularModelMode) {
         if molecularModelMode != mode {
             molecularModelMode = mode
             loadMolecule(selectedMolecule)
@@ -891,5 +899,8 @@ class RecognizeViewController: UIViewController, ARSCNViewDelegate, UIGestureRec
             showDipoleMoment = show
             loadMolecule(selectedMolecule)
         }
+    }
+
+    func moleculeMenuViewController(_ menuViewController: MoleculeMenuViewController, didSelectPolymerMode: PolymerMode) {
     }
 }

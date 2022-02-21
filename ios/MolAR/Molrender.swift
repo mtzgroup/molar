@@ -13,7 +13,7 @@ class Molrender: NSObject, WKScriptMessageHandler {
     private var webView: WKWebView!
     private var completionHandler: ((Data?) -> Void)!
 
-    func loadPDB(_ pdbId: String, completionHandler: @escaping (Data?) -> Void) {
+    func loadPDB(_ pdbId: String, polymerMode: PolymerMode, completionHandler: @escaping (Data?) -> Void) {
         self.completionHandler = completionHandler
 
         let config = WKWebViewConfiguration()
@@ -26,11 +26,24 @@ class Molrender: NSObject, WKScriptMessageHandler {
 <body>
 <script src="molrender.js"></script>
 <script>
-main('https://models.rcsb.org/
+(async () => {
+  try {
+    const response = await window.fetch('https://models.rcsb.org/
 """ + pdbId + """
-.bcif', 'usdz').catch((error) => {
-  window.webkit.messageHandlers.iosListener.postMessage("error");
-});
+.bcif');
+    const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
+    const data = new Uint8Array(buffer);
+    window.main(data, x => {
+      window.webkit.messageHandlers.iosListener.postMessage(Array.from(x));
+    },
+""" + (polymerMode == .cartoon ? "'cartoon'" : "'gaussianSurface'") + """
+);
+  } catch (e) {
+    window.webkit.messageHandlers.iosListener.postMessage("error");
+  }
+})();
+
 </script>
 </body>
 </html>
@@ -38,13 +51,11 @@ main('https://models.rcsb.org/
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if message.body as? [UInt8] == nil { // An error has occurred.
-            completionHandler(nil)
-            return
+        var d: Data? = nil
+        if let body = message.body as? [UInt8] {
+            d = Data(body)
         }
-
-        let bytes = message.body as! [UInt8]
-        let d = Data(bytes)
         completionHandler(d)
+        userContentController.removeScriptMessageHandler(forName: "iosListener")
     }
 }

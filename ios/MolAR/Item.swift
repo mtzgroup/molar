@@ -67,7 +67,7 @@ class Item: Hashable {
     }
 
     func getImage(completionHandler: @escaping (UIImage?) -> Void) {
-        getUSDZURL(molecularModelMode: .ballAndStick, molecularOrbitalMode: .none, showDipoleMoment: false, vibrationalMode: nil) { url in
+        getUSDZURL(molecularModelMode: .ballAndStick, molecularOrbitalMode: .none, showDipoleMoment: false, vibrationalMode: nil, polymerMode: .cartoon) { url in
             guard let url = url else {
                 completionHandler(nil)
                 return
@@ -131,7 +131,11 @@ class Item: Hashable {
     */
 
 
-    func getUSDZURL(molecularModelMode: MolecularModelMode, molecularOrbitalMode: MolecularOrbitalMode, showDipoleMoment: Bool, vibrationalMode: Int?, defaultScale: Float = 8.0, completionHandler: @escaping (URL?) -> Void) {
+    func getUSDZURL(
+        molecularModelMode: MolecularModelMode, molecularOrbitalMode: MolecularOrbitalMode,
+        showDipoleMoment: Bool, vibrationalMode: Int?,
+        polymerMode: PolymerMode,
+        defaultScale: Float = 8.0, completionHandler: @escaping (URL?) -> Void) {
         if !isPDB {
             getSDFStructure() { structure in
                 guard let structure = structure else {
@@ -185,7 +189,8 @@ class Item: Hashable {
                 }
             }
         } else {
-            let filename = escapeQuery(name.replacingOccurrences(of: " ", with: "_")) + ".usdz"
+            let name2 = polymerMode == .cartoon ? name : (name + "_gaussiansurface")
+            let filename = escapeQuery(name2.replacingOccurrences(of: " ", with: "_")) + ".usdz"
 
             // If it's already in the bundle, return it.
             if let localURL = Bundle.main.url(forResource: "usdz/" + filename, withExtension: nil) {
@@ -193,7 +198,7 @@ class Item: Hashable {
                 return
             }
 
-            if isPDB {
+            do {
                 // Download BCIF from PDB and generate USDZ on device.
 
                 // If it's already generated, return it.
@@ -208,7 +213,7 @@ class Item: Hashable {
                 }
 
                 let m = Molrender()
-                m.loadPDB(name) {data in
+                m.loadPDB(name, polymerMode: polymerMode) {data in
                     guard let data = data else {
                         completionHandler(nil)
                         return
@@ -216,8 +221,6 @@ class Item: Hashable {
                     try! data.write(to: savedURL)
                     completionHandler(savedURL)
                 }
-            } else {
-                fatalError()
             }
         }
     }
@@ -303,7 +306,7 @@ class Item: Hashable {
         }
     }
 
-    func getVibrations() -> [[Vec3]]? {
+    private func getVibrations() -> [[Vec3]]? {
         guard let data = Database.getVibrations(name: preview ?? name) else { return nil }
         var modes = [[Vec3]]()
         data.withUnsafeBytes { p in
@@ -372,7 +375,7 @@ class Item: Hashable {
 struct{title}
 audit_author{name}
 exptl{method}
-pdbx_vrpt_summary{PDB_resolution}
+rcsb_entry_info{resolution_combined}
 struct_keywords{pdbx_keywords}
 polymer_entities{
 rcsb_entity_source_organism{ncbi_scientific_name}

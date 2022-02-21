@@ -9,7 +9,7 @@ import Foundation
 import SQLite3
 
 class Database {
-    static func search(_ query: String, isSuggestion: Bool) -> [Item] {
+    static func search(_ query: String) -> [Item] {
         var ret = [Item]()
 
         if !query.contains("%") { // For now.
@@ -26,7 +26,7 @@ class Database {
                         let tmp = sqlite3_column_text(statement, 2)
                         let preview = (tmp == nil) ? nil : String(cString: tmp!)
                         let item = Item(name: name, text: fullName, isPDB: isNamePDB(name))
-                        item.isSuggestion = isSuggestion
+                        item.isSuggestion = false
                         item.preview = preview
                         ret.append(item)
                     }
@@ -41,7 +41,7 @@ class Database {
                         let tmp = sqlite3_column_text(statement, 2)
                         let preview = (tmp == nil) ? nil : String(cString: tmp!)
                         let item = Item(name: name, text: fullName, isPDB: isNamePDB(name))
-                        item.isSuggestion = isSuggestion
+                        item.isSuggestion = false
                         item.preview = preview
                         ret.append(item)
                     }

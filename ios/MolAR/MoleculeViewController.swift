@@ -26,6 +26,8 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
     private var showDipoleMoment: Bool = false
     private var vibrationalMode: Int?
 
+    private var polymerMode: PolymerMode = .cartoon
+
 //    init(item: Item) {
 //        super.init(nibName: nil, bundle: nil)
 //        self.item = item
@@ -93,7 +95,7 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
                         (author as? [String: Any])?["name"] as? String
                     })
                     let method = ((topJSON["exptl"] as? [Any])?[0] as? [String: Any])?["method"] as? String
-                    let resolution = (topJSON["pdbx_vrpt_summary"] as? [String: Any])?["PDB_resolution"] as? Double
+                    let resolution = ((topJSON["rcsb_entry_info"] as? [String: Any])?["resolution_combined"] as? [Double])?.first
                     let classification = (topJSON["struct_keywords"] as? [String: Any])?["pdbx_keywords"] as? String
                     var sources = [String]()
                     var hosts = [String]()
@@ -235,15 +237,21 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
                     //}
                 }
             }
+        }
 
-            if navigationItem.rightBarButtonItem == nil { // could be the Done button
-                navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), style: .plain, target: self, action: #selector(showMenu))
-            }
+        if navigationItem.rightBarButtonItem == nil { // could be the Done button
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), style: .plain, target: self, action: #selector(showMenu))
         }
     }
 
     private func loadModel(_ firstTime: Bool) {
-        item.getUSDZURL(molecularModelMode: molecularModelMode, molecularOrbitalMode: molecularOrbitalMode, showDipoleMoment: showDipoleMoment, vibrationalMode: vibrationalMode) { [weak self] url in
+        item.getUSDZURL(
+            molecularModelMode: molecularModelMode,
+            molecularOrbitalMode: molecularOrbitalMode,
+            showDipoleMoment: showDipoleMoment,
+            vibrationalMode: vibrationalMode,
+            polymerMode: polymerMode
+        ) { [weak self] url in
             guard let self = self else { return }
             guard let url = url else {
                 //if firstTime {
@@ -296,7 +304,13 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
     }
 
     @IBAction func viewAR() {
-        item.getUSDZURL(molecularModelMode: molecularModelMode, molecularOrbitalMode: molecularOrbitalMode, showDipoleMoment: showDipoleMoment, vibrationalMode: vibrationalMode) { [weak self] url in
+        item.getUSDZURL(
+            molecularModelMode: molecularModelMode,
+            molecularOrbitalMode: molecularOrbitalMode,
+            showDipoleMoment: showDipoleMoment,
+            vibrationalMode: vibrationalMode,
+            polymerMode: polymerMode
+        ) { [weak self] url in
             guard let self = self, let url = url else { return }
             self.selectedURL = url
 
@@ -319,9 +333,11 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
     @objc private func showMenu(sender: Any?) {
         let vc = MoleculeMenuViewController()
         vc.modalPresentationStyle = .popover
+        vc.isPDB = item.isPDB
         vc.molecularModelMode = molecularModelMode
         vc.molecularOrbitalMode = molecularOrbitalMode
         vc.showDipoleMoment = showDipoleMoment
+        vc.polymerMode = polymerMode
         vc.delegate = self
 
         if let popoverController = vc.popoverPresentationController, let button = sender as? UIBarButtonItem {
@@ -336,7 +352,7 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
         return .none
     }
 
-    func moleculeMenuViewController(_: MoleculeMenuViewController, didSelectMolecule mode: MolecularModelMode) {
+    func moleculeMenuViewController(_: MoleculeMenuViewController, didSelectMolecularModelMode mode: MolecularModelMode) {
         if molecularModelMode != mode {
             molecularModelMode = mode
             loadModel(false)
@@ -360,6 +376,15 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
             loadModel(false)
         }
     }
+
+    func moleculeMenuViewController(_: MoleculeMenuViewController, didSelectPolymerMode mode: PolymerMode) {
+        if polymerMode != mode {
+            polymerMode = mode
+            self.activityIndicator.isHidden = false
+            self.activityIndicator.startAnimating()
+            loadModel(false)
+        }
+    }
 }
 
 
@@ -370,9 +395,10 @@ class MoleculeViewController: UIViewController, QLPreviewControllerDataSource, M
 
 
 protocol MoleculeMenuViewControllerDelegate: AnyObject {
-    func moleculeMenuViewController(_ menuViewController: MoleculeMenuViewController, didSelectMolecule: MolecularModelMode)
+    func moleculeMenuViewController(_ menuViewController: MoleculeMenuViewController, didSelectMolecularModelMode: MolecularModelMode)
     func moleculeMenuViewController(_ menuViewController: MoleculeMenuViewController, didSelectMolecularOrbitalMode: MolecularOrbitalMode)
     func moleculeMenuViewController(_ menuViewController: MoleculeMenuViewController, didChangeShowDipoleMoment: Bool)
+    func moleculeMenuViewController(_ menuViewController: MoleculeMenuViewController, didSelectPolymerMode: PolymerMode)
 }
 
 class MoleculeMenuViewController: UITableViewController {
@@ -381,9 +407,14 @@ class MoleculeMenuViewController: UITableViewController {
         ["Hide Orbitals", "Show HOMO", "Show LUMO"],
         ["Hide Dipole Moment", "Show Dipole Moment"]
     ]
+    private let pdbModeNames: [[String]] = [
+        ["Cartoon", "Gaussian Surface"],
+    ]
+    var isPDB: Bool = false
     var molecularModelMode: MolecularModelMode = .ballAndStick
     var molecularOrbitalMode: MolecularOrbitalMode = .none
     var showDipoleMoment: Bool = false
+    var polymerMode: PolymerMode = .cartoon
 
     weak var delegate: MoleculeMenuViewControllerDelegate?
 
@@ -401,12 +432,18 @@ class MoleculeMenuViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
         let row = indexPath.row
-        if section == 0 {
-            delegate?.moleculeMenuViewController(self, didSelectMolecule: MolecularModelMode(rawValue: row)!)
-        } else if section == 1 {
-            delegate?.moleculeMenuViewController(self, didSelectMolecularOrbitalMode: MolecularOrbitalMode(rawValue: row)!)
+        if isPDB {
+            if section == 0 {
+                delegate?.moleculeMenuViewController(self, didSelectPolymerMode: PolymerMode(rawValue: row)!)
+            }
         } else {
-            delegate?.moleculeMenuViewController(self, didChangeShowDipoleMoment: row == 1)
+            if section == 0 {
+                delegate?.moleculeMenuViewController(self, didSelectMolecularModelMode: MolecularModelMode(rawValue: row)!)
+            } else if section == 1 {
+                delegate?.moleculeMenuViewController(self, didSelectMolecularOrbitalMode: MolecularOrbitalMode(rawValue: row)!)
+            } else {
+                delegate?.moleculeMenuViewController(self, didChangeShowDipoleMoment: row == 1)
+            }
         }
         dismiss(animated: true, completion: nil)
     }
@@ -415,11 +452,11 @@ class MoleculeMenuViewController: UITableViewController {
     // MARK: - UITableViewDataSource
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return modeNames[section].count
+        return isPDB ? pdbModeNames[section].count : modeNames[section].count
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return isPDB ? 1 : 3
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -436,15 +473,19 @@ class MoleculeMenuViewController: UITableViewController {
         let checked: Bool
         let section = indexPath.section
         let row = indexPath.row
-        if section == 0 {
-            checked = row == molecularModelMode.rawValue
-        } else if section == 1 {
-            checked = row == molecularOrbitalMode.rawValue
+        if isPDB {
+            checked = row == polymerMode.rawValue
         } else {
-            checked = (row == 1) == showDipoleMoment
+            if section == 0 {
+                checked = row == molecularModelMode.rawValue
+            } else if section == 1 {
+                checked = row == molecularOrbitalMode.rawValue
+            } else {
+                checked = (row == 1) == showDipoleMoment
+            }
         }
         cell.accessoryType = checked ? .checkmark : .none
-        cell.textLabel!.text = modeNames[section][row]
+        cell.textLabel!.text = isPDB ? pdbModeNames[section][row] : modeNames[section][row]
         return cell
     }
 }

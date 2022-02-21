@@ -13,13 +13,11 @@
 import Foundation
 
 class MCMesh {
-    let vertexCount: Int
     var vertices: [Vec3]
     let normals: [Vec3]
     let indices: ContiguousArray<Int>
 
-    init(vertexCount: Int, vertices: [Vec3], normals: [Vec3], indices: ContiguousArray<Int>) {
-        self.vertexCount = vertexCount
+    init(vertices: [Vec3], normals: [Vec3], indices: ContiguousArray<Int>) {
         self.vertices = vertices
         self.normals = normals
         self.indices = indices
@@ -382,40 +380,6 @@ private let TriTable: [[Int]] = [
     []
 ]
 
-/**
- * Triangles are constructed between points on cube edges.
- * AllowedContours[edge1][edge1] indicates which lines from a given
- * triangle should be shown in line mode.
- *
- * Values are bitmasks:
- * In loop over cubes we keep another bitmask indicating whether our current
- * cell is the first x-value (1),
- * first y-value (2) or first z-value (4) of the current loop.
- * We draw all lines on leading faces but only draw trailing face lines the first
- * time through the loop
- * A value of 8 below means the edge is always drawn (leading face)
- *
- * E.g. the first row, lines between edge0 and other edges in the bottom
- * x-y plane are only drawn for the first value of z, edges in the
- * x-z plane are only drawn for the first value of y. No other lines
- * are drawn as they're redundant
- * The line between edge 1 and 5 is always drawn as it's on the leading edge
- */
-private let AllowedContours: [[Int]] = [
-    [ 0, 4, 4, 4, 2, 0, 0, 0, 2, 2, 0, 0 ], // 1 2 3 4 8 9
-    [ 4, 0, 4, 4, 0, 8, 0, 0, 0, 8, 8, 0 ], // 0 2 3 5 9 10
-    [ 4, 4, 0, 4, 0, 0, 8, 0, 0, 0, 8, 8 ], // 0 1 3 6 10 11
-    [ 4, 4, 4, 0, 0, 0, 0, 1, 1, 0, 0, 1 ], // 0 1 2 7 8 11
-    [ 2, 0, 0, 0, 0, 8, 8, 8, 2, 2, 0, 0 ], // 0 5 6 7 8 9
-    [ 0, 8, 0, 0, 8, 0, 8, 8, 0, 8, 8, 0 ], // And rotate it
-    [ 0, 0, 8, 0, 8, 8, 0, 8, 0, 0, 8, 8 ],
-    [ 0, 0, 0, 1, 8, 8, 8, 0, 1, 0, 0, 1 ],
-    [ 2, 0, 0, 1, 2, 0, 0, 1, 0, 2, 0, 1 ], // 0 3 4 7 9 11
-    [ 2, 8, 0, 0, 2, 8, 0, 0, 2, 0, 8, 0 ], // And rotate some more
-    [ 0, 8, 8, 0, 0, 8, 8, 0, 0, 8, 0, 8 ],
-    [ 0, 0, 8, 1, 0, 0, 8, 1, 1, 0, 8, 0 ]
-]
-
 
 func computeMarchingCubesMesh(data: [Float], dimensions: [Int], isoLevel: Float) -> MCMesh {
     let mc = MarchingCubes(data: data, dimensions: dimensions, isoLevel: isoLevel)
@@ -459,7 +423,7 @@ private class MarchingCubes {
     }
 
     func get() -> MCMesh {
-        return MCMesh(vertexCount: state.vertexCount, vertices: state.vertices, normals: state.normals, indices: state.indices)
+        return MCMesh(vertices: state.vertices, normals: state.normals, indices: state.indices)
     }
 }
 
@@ -616,12 +580,8 @@ private final class MarchingCubesState {
 
     private func addTriangle(_ vertList: [Int], _ a: Int, _ b: Int, _ c: Int) {
         let i = vertList[a], j = vertList[b], k = vertList[c]
-        // vertex indices <0 mean that the vertex was ignored and is not available
-        // and hence we don't add a triangle when this occurs
-        if i >= 0 && j >= 0 && k >= 0 {
-            indices.append(i)
-            indices.append(j)
-            indices.append(k)
-        }
+        indices.append(i)
+        indices.append(j)
+        indices.append(k)
     }
 }

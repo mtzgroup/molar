@@ -249,8 +249,8 @@ private func genCylinder(_ p1: Vec3, _ p2: Vec3, _ r: Float, _ caps: Bool, _ seg
         }
 
         let k = segments * 2
-        points.append((x1, y1, z1))
-        points.append((x2, y2, z2))
+        points.append(p1)
+        points.append(p2)
         normals.append(normal)
         normals.append(normal2)
         for i in 0 ..< segments {
@@ -330,7 +330,7 @@ private func genArrow(_ p1: Vec3, _ p2: Vec3, _ r: Float, _ segments: Int, _ col
         }
 
         let k = segments * 2
-        points.append((x1, y1, z1))
+        points.append(p1)
         points.append((x2 + p*x, y2 + p*y, z2 + p*z))
         normals.append(normal)
         normals.append(normal)
@@ -363,7 +363,7 @@ private func genArrow(_ p1: Vec3, _ p2: Vec3, _ r: Float, _ segments: Int, _ col
 
         let tmp = segments * 4 + 2
         for i in 0 ..< segments {
-            points.append((x2, y2, z2)) // The tip
+            points.append(p2) // The tip
             let normal1 = normals[tmp + i]
             let normal2 = normals[tmp + ((i + 1) % segments)]
             normals.append(( // Should normalize

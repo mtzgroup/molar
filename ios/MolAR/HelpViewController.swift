@@ -10,8 +10,8 @@ import WebKit
 
 class HelpViewController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     private var webView: WKWebView!
-    private var mode: Int
-    private var firstTime: Bool
+    private let mode: Int
+    private let firstTime: Bool
 
     init(mode: Int, firstTime: Bool) {
         self.mode = mode
